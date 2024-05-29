@@ -8,9 +8,9 @@ public class Counter : MonoBehaviour
     [SerializeField] private int _increaseValue = 1;
 
     private int _value;
-    private bool _isActive = false;
 
     private Coroutine _currentCoroutine;
+
     public event Action<int> Changed;
 
     private void Update()
@@ -21,19 +21,24 @@ public class Counter : MonoBehaviour
 
     private void ActivateCoroutine()
     {
-        _isActive = _isActive ? false : true;
-
         if (_currentCoroutine != null)
+        {
             StopCoroutine(_currentCoroutine);
-
-        _currentCoroutine = StartCoroutine(IncreaseValue());
+            _currentCoroutine = null;
+        }
+        else
+        {
+            _currentCoroutine = StartCoroutine(IncreaseValue());
+        }
     }
 
     private IEnumerator IncreaseValue()
     {
-        while (_isActive)
+        WaitForSeconds wait = new WaitForSeconds(_timeStep);
+
+        while (enabled)
         {
-            yield return new WaitForSeconds(_timeStep);
+            yield return wait;
 
             _value += _increaseValue;
             Changed?.Invoke(_value);
